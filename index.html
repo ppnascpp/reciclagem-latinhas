@@ -11,6 +11,7 @@
       --vermelho: #e63946;
       --verde: #1ab248;
       --fundo-claro: #a5a5a5;
+      --cinza-discreto: #888888;
     }
 
     body {
@@ -44,41 +45,52 @@
 
     #quantidade-container {
       display: flex;
-      align-items: flex-end;
+      align-items: baseline;
       justify-content: center;
       gap: 1rem;
       margin-bottom: 1rem;
       position: relative;
-      min-width: 200px;
+      min-width: 220px;
     }
 
     #quantidade-anterior {
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: 600;
-      color: var(--azul-senai);
-      opacity: 0.7;
+      color: var(--cinza-discreto);
       user-select: none;
-      align-self: flex-start;
+      flex-shrink: 0;
+      /* alinhado baseline para ficar no mesmo nível do atual */
+    }
+
+    #quantidade-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     #quantidade {
       font-size: 5rem;
       font-weight: bold;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-      position: relative;
       line-height: 1;
+      color: var(--azul-senai);
+      position: relative;
+      z-index: 2;
     }
 
     #incremento {
       position: absolute;
-      top: 100%; /* abaixo do número grande */
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 1.2rem;
-      color: var(--verde);
+      left: -2.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      color: var(--cinza-discreto);
       font-weight: 600;
-      margin-top: 0.2rem;
       user-select: none;
+      z-index: 1;
+      pointer-events: none;
+      white-space: nowrap;
     }
 
     #info-atualizacao {
@@ -155,8 +167,12 @@
       #quantidade {
         font-size: 3rem;
       }
+      #quantidade-anterior {
+        font-size: 1.8rem;
+      }
       #incremento {
         font-size: 1rem;
+        left: -1.8rem;
       }
       #info-atualizacao, #aviso-cache {
         max-width: 90%;
@@ -173,8 +189,8 @@
 
   <div id="quantidade-container">
     <div id="quantidade-anterior">31</div>
-    <div id="quantidade">
-      Carregando...
+    <div id="quantidade-wrapper">
+      <div id="quantidade">Carregando...</div>
       <div id="incremento"></div>
     </div>
   </div>
@@ -204,7 +220,7 @@
   </div>
 
   <script>
-    let quantidadeAnterior = 31; // número fixo inicial, pode salvar no localStorage ou buscar da planilha, aqui fixo só pra exemplo
+    let quantidadeAnterior = 31;
 
     async function carregarQuantidade() {
       try {
@@ -219,11 +235,11 @@
         const anteriorElem = document.getElementById("quantidade-anterior");
         const incrementoElem = document.getElementById("incremento");
 
-        quantidadeElem.childNodes[0].nodeValue = quantidadeAtual; // atualiza texto principal
+        quantidadeElem.textContent = quantidadeAtual;
 
         // Calcula incremento
         let diff = quantidadeAtual - quantidadeAnterior;
-        if(diff > 0){
+        if (diff > 0) {
           incrementoElem.textContent = "+" + diff;
         } else {
           incrementoElem.textContent = "";
@@ -238,14 +254,14 @@
           quantidadeElem.style.color = "var(--verde)";
         }
 
-        // Atualiza o número anterior (se quiser guardar para próxima atualização, pode salvar localStorage aqui)
+        // Atualiza o número anterior com valor antigo (antes da atualização)
         anteriorElem.textContent = quantidadeAnterior;
 
         // Atualiza quantidadeAnterior para próxima chamada
         quantidadeAnterior = quantidadeAtual;
 
       } catch (erro) {
-        document.getElementById("quantidade").innerText = "Erro ao carregar";
+        document.getElementById("quantidade").textContent = "Erro ao carregar";
         document.getElementById("quantidade-anterior").textContent = "";
         document.getElementById("incremento").textContent = "";
         console.error("Erro ao carregar CSV:", erro);
