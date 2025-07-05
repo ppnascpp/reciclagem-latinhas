@@ -151,35 +151,40 @@
   </div>
 
   <script>
-    async function carregarQuantidade() {
-      try {
-        const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRxUhwhNg1vw0pCTgym2Oo_5BzF_2vjOcHV--TbmY24_fjKq1Egyu2CN92V8Bo-P7ug-VmTGNPLY5N3/pub?output=csv&t=" + new Date().getTime();
-        const resposta = await fetch(url);
-        const texto = await resposta.text();
-        const linhas = texto.trim().split("\n");
-        const valores = linhas[0].split(",");
-        let quantidade = parseInt(valores[1].replace(/\r/g, ""), 10);
+  async function carregarQuantidade() {
+    try {
+      const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRxUhwhNg1vw0pCTgym2Oo_5BzF_2vjOcHV--TbmY24_fjKq1Egyu2CN92V8Bo-P7ug-VmTGNPLY5N3/pub?output=csv&t=" + new Date().getTime();
+      const resposta = await fetch(url, { cache: "no-store" });
+      const texto = await resposta.text();
 
-        document.getElementById("quantidade").innerText = quantidade;
+      const linhas = texto.trim().split("\n");
 
-        const numeroElem = document.getElementById("quantidade");
-        if (quantidade <= 100) {
-          numeroElem.style.color = "var(--vermelho)";
-        } else if (quantidade <= 300) {
-          numeroElem.style.color = "var(--amarelo)";
-        } else {
-          numeroElem.style.color = "var(--verde)";
-        }
+      if (linhas.length < 2) throw new Error("CSV sem dados");
 
-      } catch (erro) {
-        document.getElementById("quantidade").innerText = "Erro ao carregar";
-        console.error("Erro ao carregar CSV:", erro);
+      const valores = linhas[1].split(",");
+      const quantidade = parseInt(valores[1].replace(/\r/g, ""), 10);
+
+      const numeroElem = document.getElementById("quantidade");
+      numeroElem.innerText = quantidade;
+
+      if (quantidade <= 100) {
+        numeroElem.style.color = "var(--vermelho)";
+      } else if (quantidade <= 300) {
+        numeroElem.style.color = "var(--amarelo)";
+      } else {
+        numeroElem.style.color = "var(--verde)";
       }
-    }
 
-    carregarQuantidade();
-    setInterval(carregarQuantidade, 30000);
-  </script>
+    } catch (erro) {
+      console.error("Erro ao carregar CSV:", erro);
+      document.getElementById("quantidade").innerText = "Erro ao carregar";
+    }
+  }
+
+  carregarQuantidade();
+  setInterval(carregarQuantidade, 30000);
+</script>
+
 </body>
 </html>
 
