@@ -67,7 +67,7 @@
   <script>
     async function carregarQuantidade() {
       try {
-        const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQDmEvEGRGjTk6mA3tZpLNL1dWXye4_ONIBX02eXx_eTxJkBQoFki4e9rCMBXRZ3lYoiJ-em89zVENE/pub?output=csv&t=" + new Date().getTime();
+        const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRxUhwhNg1vw0pCTgym2Oo_5BzF_2vjOcHV--TbmY24_fjKq1Egyu2CN92V8Bo-P7ug-VmTGNPLY5N3/pub?output=csv&t=" + new Date().getTime();
         const resposta = await fetch(url);
         const texto = await resposta.text();
         const linhas = texto.trim().split("\n");
