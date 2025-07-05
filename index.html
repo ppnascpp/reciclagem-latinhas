@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quantidade de Latinhas - SENAI</title>
+</head>
+<body>
+  <h1>Projeto Reciclagem de Latinhas - SENAI</h1>
+  <p>Quantidade de latinhas arrecadadas:</p>
+  <div id="quantidade">Carregando...</div>
+
+  <script>
+    async function carregarQuantidade() {
+      try {
+        const resposta = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQDmEvEGRGjTk6mA3tZpLNL1dWXye4_ONIBX02eXx_eTxJkBQoFki4e9rCMBXRZ3lYoiJ-em89zVENE/pub?output=csv");
+        const texto = await resposta.text();
+        console.log("CSV recebido:");
+        console.log(texto);
+
+        const linhas = texto.trim().split("\n");
+        // CSV esperado:
+        // Quantidade de latinhas arrecadadas:,157
+        // Pegamos a segunda linha
+        if(linhas.length < 2) throw new Error("CSV com poucas linhas");
+        
+        const colunas = linhas[1].split(",");
+        if(colunas.length < 2) throw new Error("CSV sem coluna 2");
+
+        const quantidade = colunas[1];
+        document.getElementById("quantidade").innerText = quantidade;
+      } catch (erro) {
+        document.getElementById("quantidade").innerText = "Erro ao carregar dados";
+        console.error("Erro:", erro);
+      }
+    }
+
+    carregarQuantidade();
+    setInterval(carregarQuantidade, 30000);
+  </script>
+</body>
+</html>
+
