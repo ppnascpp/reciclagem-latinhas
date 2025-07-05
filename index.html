@@ -7,7 +7,7 @@
   <style>
     :root {
       --azul-senai: #004a7a;
-      --amarelo: #e6ff08;
+      --amarelo: #ffe600;
       --vermelho: #e63946;
       --verde: #1ab248;
       --fundo-claro: #a5a5a5;
@@ -30,9 +30,20 @@
     h1 {
       font-size: 2.8rem;
       font-weight: 700;
-      margin-bottom: 0.5rem;
+      margin-bottom: 1.5rem; /* aumentei a margem para separar */
       color: var(--azul-senai);
       text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    /* Linha separadora entre título e descrição */
+    #separador {
+      width: 80%;
+      max-width: 320px;
+      height: 2px;
+      background-color: var(--azul-senai);
+      margin-bottom: 1.5rem;
+      border-radius: 2px;
+      opacity: 0.6;
     }
 
     #descricao {
@@ -77,13 +88,12 @@
       max-width: 320px;
     }
 
-    /* NOVO: Cada bloco quadrado + legenda */
     #indicadores > div {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 0.3rem;
-      min-width: 90px; /* Espaço mínimo para a legenda não ficar apertada */
+      min-width: 90px;
     }
 
     .quadrado {
@@ -128,14 +138,19 @@
         max-width: 90%;
       }
       #indicadores {
-        gap: 2.5rem; /* Espaçamento maior entre os blocos no celular */
+        gap: 2.5rem;
+      }
+      #separador {
+        width: 90%;
+        margin-bottom: 1rem;
       }
     }
   </style>
 </head>
 <body>
-  <h1>Projeto Reciclagem de Latinhas - SENAI CIVIT I</h1>
-  <div id="descricao">Latinhas Arrecadadas:</div>
+  <h1>Projeto Reciclagem de Latinhas - SENAI</h1>
+  <div id="separador"></div> <!-- linha separadora -->
+  <div id="descricao">Quantidade de latinhas arrecadadas:</div>
   <div id="quantidade">Carregando...</div>
 
   <div id="indicadores">
@@ -194,4 +209,5 @@
   </script>
 </body>
 </html>
+
 
