@@ -77,6 +77,15 @@
       max-width: 320px;
     }
 
+    /* NOVO: Cada bloco quadrado + legenda */
+    #indicadores > div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      min-width: 90px; /* Espaço mínimo para a legenda não ficar apertada */
+    }
+
     .quadrado {
       width: 30px;
       height: 30px;
@@ -100,7 +109,7 @@
       color: var(--azul-senai);
       font-weight: 600;
       font-size: 0.9rem;
-      margin-top: 0.3rem;
+      margin-top: 0;
       text-align: center;
       max-width: 70px;
     }
@@ -119,7 +128,7 @@
         max-width: 90%;
       }
       #indicadores {
-        gap: 2.5rem; /* Espaçamento maior entre os quadrados no celular */
+        gap: 2.5rem; /* Espaçamento maior entre os blocos no celular */
       }
     }
   </style>
@@ -185,3 +194,4 @@
   </script>
 </body>
 </html>
+
