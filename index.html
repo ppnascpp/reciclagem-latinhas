@@ -47,7 +47,6 @@
       font-weight: bold;
       margin-bottom: 1rem;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-      transition: color 0.3s ease;
     }
 
     #info-atualizacao {
@@ -155,20 +154,15 @@
     async function carregarQuantidade() {
       try {
         const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRxUhwhNg1vw0pCTgym2Oo_5BzF_2vjOcHV--TbmY24_fjKq1Egyu2CN92V8Bo-P7ug-VmTGNPLY5N3/pub?output=csv&t=" + new Date().getTime();
-        const resposta = await fetch(url, { cache: "no-store" });
+        const resposta = await fetch(url);
         const texto = await resposta.text();
         const linhas = texto.trim().split("\n");
+        const valores = linhas[0].split(",");
+        let quantidade = parseInt(valores[1].replace(/\r/g, ""), 10);
 
-        // Detecta se há cabeçalho
-        const temCabecalho = linhas[0].toLowerCase().includes("quantidade");
-        const linhaDados = temCabecalho ? linhas[1] : linhas[0];
-
-        const valores = linhaDados.split(",");
-        const quantidade = parseInt(valores[1].replace(/\r/g, ""), 10);
+        document.getElementById("quantidade").innerText = quantidade;
 
         const numeroElem = document.getElementById("quantidade");
-        numeroElem.innerText = quantidade;
-
         if (quantidade <= 100) {
           numeroElem.style.color = "var(--vermelho)";
         } else if (quantidade <= 300) {
@@ -178,8 +172,8 @@
         }
 
       } catch (erro) {
-        console.error("Erro ao carregar CSV:", erro);
         document.getElementById("quantidade").innerText = "Erro ao carregar";
+        console.error("Erro ao carregar CSV:", erro);
       }
     }
 
@@ -188,8 +182,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
