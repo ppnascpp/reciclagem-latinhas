@@ -1,32 +1,77 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Quantidade de Latinhas - SENAI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Projeto Reciclagem - SENAI</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #6b8dd6, #a3cef1);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      margin: 0;
+      padding: 0 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    h1 {
+      font-size: 3.2rem;
+      margin-bottom: 0.2em;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+    }
+    #descricao {
+      font-size: 1.6rem;
+      margin-bottom: 0.5em;
+      font-weight: 600;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.25);
+    }
+    #quantidade {
+      font-size: 5rem;
+      font-weight: 900;
+      color: #ffd93b;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+      margin-bottom: 1em;
+    }
+    footer {
+      margin-top: 2em;
+      font-size: 0.9rem;
+      color: #f0f0f0bb;
+      user-select: none;
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
+      #descricao {
+        font-size: 1.2rem;
+      }
+      #quantidade {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <h1>Projeto Reciclagem de Latinhas - SENAI</h1>
-  <p>Quantidade de latinhas arrecadadas:</p>
+  <div id="descricao">Quantidade de latinhas arrecadadas:</div>
   <div id="quantidade">Carregando...</div>
+  <footer>Atualizado automaticamente pela planilha</footer>
 
   <script>
     async function carregarQuantidade() {
       try {
-        const resposta = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQDmEvEGRGjTk6mA3tZpLNL1dWXye4_ONIBX02eXx_eTxJkBQoFki4e9rCMBXRZ3lYoiJ-em89zVENE/pub?output=csv");
+        // Adiciona timestamp para evitar cache
+        const urlCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQDmEvEGRGjTk6mA3tZpLNL1dWXye4_ONIBX02eXx_eTxJkBQoFki4e9rCMBXRZ3lYoiJ-em89zVENE/pub?output=csv&t=" + new Date().getTime();
+        const resposta = await fetch(urlCSV);
         const texto = await resposta.text();
-        console.log("CSV recebido:");
-        console.log(texto);
-
         const linhas = texto.trim().split("\n");
-        // CSV esperado:
-        // Quantidade de latinhas arrecadadas:,157
-        // Pegamos a segunda linha
-        if(linhas.length < 2) throw new Error("CSV com poucas linhas");
-        
+        if (linhas.length < 2) throw new Error("CSV inválido");
         const colunas = linhas[1].split(",");
-        if(colunas.length < 2) throw new Error("CSV sem coluna 2");
-
+        if (colunas.length < 2) throw new Error("Formato do CSV errado");
         const quantidade = colunas[1];
         document.getElementById("quantidade").innerText = quantidade;
       } catch (erro) {
@@ -36,8 +81,7 @@
     }
 
     carregarQuantidade();
-    setInterval(carregarQuantidade, 30000);
+    setInterval(carregarQuantidade, 30000); // Atualiza a cada 30s
   </script>
 </body>
 </html>
-
