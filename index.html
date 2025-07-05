@@ -1,26 +1,88 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <title>Teste CSV</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reciclagem de Latinhas - SENAI</title>
+  <style>
+    :root {
+      --azul-senai: #0072bc;
+      --verde-senai: #1ab248;
+      --amarelo: #ffe600;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, var(--azul-senai), var(--verde-senai));
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
+    }
+
+    #descricao {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    #quantidade {
+      font-size: 5rem;
+      font-weight: bold;
+      color: var(--amarelo);
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #dff;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      #descricao { font-size: 1.2rem; }
+      #quantidade { font-size: 3rem; }
+    }
+  </style>
 </head>
 <body>
-  <h2>Conteúdo do CSV:</h2>
-  <pre id="saida">Carregando...</pre>
+  <h1>Projeto Reciclagem de Latinhas - SENAI</h1>
+  <div id="descricao">Quantidade de latinhas arrecadadas:</div>
+  <div id="quantidade">Carregando...</div>
+  <footer>Atualizado automaticamente pela planilha</footer>
 
   <script>
-    async function testarCSV() {
+    async function carregarQuantidade() {
       try {
-        const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRxUhwhNg1vw0pCTgym2Oo_5BzF_2vjOcHV--TbmY24_fjKq1Egyu2CN92V8Bo-P7ug-VmTGNPLY5N3/pub?output=csv";
+        const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRxUhwhNg1vw0pCTgym2Oo_5BzF_2vjOcHV--TbmY24_fjKq1Egyu2CN92V8Bo-P7ug-VmTGNPLY5N3/pub?output=csv&t=" + new Date().getTime();
         const resposta = await fetch(url);
         const texto = await resposta.text();
-        document.getElementById("saida").innerText = texto;
+        const linhas = texto.trim().split("\n");
+        const valores = linhas[1].split(",");
+        const quantidade = valores[1].replace(/\r/g, "");
+        document.getElementById("quantidade").innerText = quantidade;
       } catch (erro) {
-        document.getElementById("saida").innerText = "Erro ao carregar: " + erro;
-        console.error(erro);
+        document.getElementById("quantidade").innerText = "Erro ao carregar";
+        console.error("Erro ao carregar CSV:", erro);
       }
     }
 
-    testarCSV();
+    carregarQuantidade();
+    setInterval(carregarQuantidade, 30000);
   </script>
 </body>
 </html>
