@@ -11,7 +11,6 @@
       --vermelho: #e63946;
       --verde: #1ab248;
       --fundo-claro: #a5a5a5;
-      --cinza-discreto: #888888;
     }
 
     body {
@@ -31,66 +30,34 @@
     h1 {
       font-size: 2.8rem;
       font-weight: 700;
-      margin-bottom: 1.5rem;
+      margin: 0 0 1rem 0;
       color: var(--azul-senai);
       text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    #barra-separadora {
+      width: 60%;
+      max-width: 320px;
+      height: 3px;
+      background-color: var(--azul-senai);
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+      opacity: 0.8;
     }
 
     #descricao {
       font-size: 2rem;
       color: var(--azul-senai);
       font-weight: 600;
-      margin-bottom: 0.3rem;
-    }
-
-    #quantidade-container {
-      display: flex;
-      align-items: baseline;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      position: relative;
-      min-width: 220px;
-    }
-
-    #quantidade-anterior {
-      font-size: 2.2rem;
-      font-weight: 600;
-      color: var(--cinza-discreto);
-      user-select: none;
-      flex-shrink: 0;
-      /* alinhado baseline para ficar no mesmo nível do atual */
-    }
-
-    #quantidade-wrapper {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      margin-bottom: 0.5rem;
     }
 
     #quantidade {
       font-size: 5rem;
       font-weight: bold;
+      margin-bottom: 1rem;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-      line-height: 1;
       color: var(--azul-senai);
-      position: relative;
-      z-index: 2;
-    }
-
-    #incremento {
-      position: absolute;
-      left: -2.5rem;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.5rem;
-      color: var(--cinza-discreto);
-      font-weight: 600;
-      user-select: none;
-      z-index: 1;
-      pointer-events: none;
-      white-space: nowrap;
     }
 
     #info-atualizacao {
@@ -167,15 +134,12 @@
       #quantidade {
         font-size: 3rem;
       }
-      #quantidade-anterior {
-        font-size: 1.8rem;
-      }
-      #incremento {
-        font-size: 1rem;
-        left: -1.8rem;
-      }
       #info-atualizacao, #aviso-cache {
         max-width: 90%;
+      }
+      #barra-separadora {
+        width: 80%;
+        margin-bottom: 1rem;
       }
       #indicadores {
         gap: 2.5rem;
@@ -185,15 +149,10 @@
 </head>
 <body>
   <h1>Projeto Reciclagem de Latinhas - SENAI</h1>
-  <div id="descricao">Quantidade de latinhas arrecadadas:</div>
+  <div id="barra-separadora"></div>
 
-  <div id="quantidade-container">
-    <div id="quantidade-anterior">31</div>
-    <div id="quantidade-wrapper">
-      <div id="quantidade">Carregando...</div>
-      <div id="incremento"></div>
-    </div>
-  </div>
+  <div id="descricao">Quantidade de latinhas arrecadadas:</div>
+  <div id="quantidade">Carregando...</div>
 
   <div id="indicadores">
     <div>
@@ -220,8 +179,6 @@
   </div>
 
   <script>
-    let quantidadeAnterior = 31;
-
     async function carregarQuantidade() {
       try {
         const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRxUhwhNg1vw0pCTgym2Oo_5BzF_2vjOcHV--TbmY24_fjKq1Egyu2CN92V8Bo-P7ug-VmTGNPLY5N3/pub?output=csv&t=" + new Date().getTime();
@@ -229,41 +186,21 @@
         const texto = await resposta.text();
         const linhas = texto.trim().split("\n");
         const valores = linhas[0].split(",");
-        let quantidadeAtual = parseInt(valores[1].replace(/\r/g, ""), 10);
+        let quantidade = parseInt(valores[1].replace(/\r/g, ""), 10);
 
-        const quantidadeElem = document.getElementById("quantidade");
-        const anteriorElem = document.getElementById("quantidade-anterior");
-        const incrementoElem = document.getElementById("incremento");
+        document.getElementById("quantidade").innerText = quantidade;
 
-        quantidadeElem.textContent = quantidadeAtual;
-
-        // Calcula incremento
-        let diff = quantidadeAtual - quantidadeAnterior;
-        if (diff > 0) {
-          incrementoElem.textContent = "+" + diff;
+        const numeroElem = document.getElementById("quantidade");
+        if (quantidade <= 100) {
+          numeroElem.style.color = "var(--vermelho)";
+        } else if (quantidade <= 300) {
+          numeroElem.style.color = "var(--amarelo)";
         } else {
-          incrementoElem.textContent = "";
+          numeroElem.style.color = "var(--verde)";
         }
-
-        // Atualiza cor do número principal
-        if (quantidadeAtual <= 100) {
-          quantidadeElem.style.color = "var(--vermelho)";
-        } else if (quantidadeAtual <= 300) {
-          quantidadeElem.style.color = "var(--amarelo)";
-        } else {
-          quantidadeElem.style.color = "var(--verde)";
-        }
-
-        // Atualiza o número anterior com valor antigo (antes da atualização)
-        anteriorElem.textContent = quantidadeAnterior;
-
-        // Atualiza quantidadeAnterior para próxima chamada
-        quantidadeAnterior = quantidadeAtual;
 
       } catch (erro) {
-        document.getElementById("quantidade").textContent = "Erro ao carregar";
-        document.getElementById("quantidade-anterior").textContent = "";
-        document.getElementById("incremento").textContent = "";
+        document.getElementById("quantidade").innerText = "Erro ao carregar";
         console.error("Erro ao carregar CSV:", erro);
       }
     }
@@ -273,6 +210,7 @@
   </script>
 </body>
 </html>
+
 
 
 
