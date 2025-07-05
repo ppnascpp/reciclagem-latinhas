@@ -30,20 +30,9 @@
     h1 {
       font-size: 2.8rem;
       font-weight: 700;
-      margin-bottom: 1.5rem; /* aumentei a margem para separar */
+      margin-bottom: 1.5rem;
       color: var(--azul-senai);
       text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-    }
-
-    /* Linha separadora entre título e descrição */
-    #separador {
-      width: 80%;
-      max-width: 320px;
-      height: 2px;
-      background-color: var(--azul-senai);
-      margin-bottom: 1.5rem;
-      border-radius: 2px;
-      opacity: 0.6;
     }
 
     #descricao {
@@ -53,11 +42,43 @@
       margin-bottom: 0.3rem;
     }
 
+    #quantidade-container {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      position: relative;
+      min-width: 200px;
+    }
+
+    #quantidade-anterior {
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--azul-senai);
+      opacity: 0.7;
+      user-select: none;
+      align-self: flex-start;
+    }
+
     #quantidade {
       font-size: 5rem;
       font-weight: bold;
-      margin-bottom: 1rem;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+      position: relative;
+      line-height: 1;
+    }
+
+    #incremento {
+      position: absolute;
+      top: 100%; /* abaixo do número grande */
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.2rem;
+      color: var(--verde);
+      font-weight: 600;
+      margin-top: 0.2rem;
+      user-select: none;
     }
 
     #info-atualizacao {
@@ -134,24 +155,29 @@
       #quantidade {
         font-size: 3rem;
       }
+      #incremento {
+        font-size: 1rem;
+      }
       #info-atualizacao, #aviso-cache {
         max-width: 90%;
       }
       #indicadores {
         gap: 2.5rem;
       }
-      #separador {
-        width: 90%;
-        margin-bottom: 1rem;
-      }
     }
   </style>
 </head>
 <body>
-  <h1>Projeto Reciclagem de Latinhas - SENAI CIVIT I</h1>
-  <div id="separador"></div> <!-- linha separadora -->
-  <div id="descricao">Latinhas Arrecadadas:</div>
-  <div id="quantidade">Carregando...</div>
+  <h1>Projeto Reciclagem de Latinhas - SENAI</h1>
+  <div id="descricao">Quantidade de latinhas arrecadadas:</div>
+
+  <div id="quantidade-container">
+    <div id="quantidade-anterior">31</div>
+    <div id="quantidade">
+      Carregando...
+      <div id="incremento"></div>
+    </div>
+  </div>
 
   <div id="indicadores">
     <div>
@@ -178,6 +204,8 @@
   </div>
 
   <script>
+    let quantidadeAnterior = 31; // número fixo inicial, pode salvar no localStorage ou buscar da planilha, aqui fixo só pra exemplo
+
     async function carregarQuantidade() {
       try {
         const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRxUhwhNg1vw0pCTgym2Oo_5BzF_2vjOcHV--TbmY24_fjKq1Egyu2CN92V8Bo-P7ug-VmTGNPLY5N3/pub?output=csv&t=" + new Date().getTime();
@@ -185,21 +213,41 @@
         const texto = await resposta.text();
         const linhas = texto.trim().split("\n");
         const valores = linhas[0].split(",");
-        let quantidade = parseInt(valores[1].replace(/\r/g, ""), 10);
+        let quantidadeAtual = parseInt(valores[1].replace(/\r/g, ""), 10);
 
-        document.getElementById("quantidade").innerText = quantidade;
+        const quantidadeElem = document.getElementById("quantidade");
+        const anteriorElem = document.getElementById("quantidade-anterior");
+        const incrementoElem = document.getElementById("incremento");
 
-        const numeroElem = document.getElementById("quantidade");
-        if (quantidade <= 100) {
-          numeroElem.style.color = "var(--vermelho)";
-        } else if (quantidade <= 300) {
-          numeroElem.style.color = "var(--amarelo)";
+        quantidadeElem.childNodes[0].nodeValue = quantidadeAtual; // atualiza texto principal
+
+        // Calcula incremento
+        let diff = quantidadeAtual - quantidadeAnterior;
+        if(diff > 0){
+          incrementoElem.textContent = "+" + diff;
         } else {
-          numeroElem.style.color = "var(--verde)";
+          incrementoElem.textContent = "";
         }
+
+        // Atualiza cor do número principal
+        if (quantidadeAtual <= 100) {
+          quantidadeElem.style.color = "var(--vermelho)";
+        } else if (quantidadeAtual <= 300) {
+          quantidadeElem.style.color = "var(--amarelo)";
+        } else {
+          quantidadeElem.style.color = "var(--verde)";
+        }
+
+        // Atualiza o número anterior (se quiser guardar para próxima atualização, pode salvar localStorage aqui)
+        anteriorElem.textContent = quantidadeAnterior;
+
+        // Atualiza quantidadeAnterior para próxima chamada
+        quantidadeAnterior = quantidadeAtual;
 
       } catch (erro) {
         document.getElementById("quantidade").innerText = "Erro ao carregar";
+        document.getElementById("quantidade-anterior").textContent = "";
+        document.getElementById("incremento").textContent = "";
         console.error("Erro ao carregar CSV:", erro);
       }
     }
@@ -209,5 +257,6 @@
   </script>
 </body>
 </html>
+
 
 
